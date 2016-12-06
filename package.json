@@ -9,11 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/react": "^0.14.52",
-    "@types/react-dom": "^0.14.19",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-draggable": "^2.2.3",
     "ts-loader": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/react": "^0.14.52",
+    "@types/react-dom": "^0.14.19"
   }
 }
