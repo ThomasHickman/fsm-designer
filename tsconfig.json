@@ -18,7 +18,8 @@
     },
     "include": [
         "src/**/*",
-        "node_modules/@types*/**/*"
+        "node_modules/@types/**/*",
+        "new_typings/**/*"
     ],
     "compileOnSave": false,
     "buildOnSave": false,
