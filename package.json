@@ -9,13 +9,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/lodash": "file:node_modules\\@types\\lodash",
     "core-decorators": "^0.14.0",
+    "lodash": "^4.17.2",
     "react": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-draggable": "^2.2.3",
     "ts-loader": "^1.2.2"
   },
   "devDependencies": {
+    "@types/core-decorators": "^0.10.30",
+    "@types/lodash": "^4.14.42",
     "@types/react": "^0.14.52",
     "@types/react-dom": "^0.14.19"
   }

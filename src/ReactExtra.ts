@@ -1,4 +1,5 @@
 import * as React from "react";
+import _ = require("lodash");
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -23,8 +24,10 @@ export class Primitive<T, PropType> extends Wrapper<T>{
 
 export class ComponentArray<ElementType extends React.ReactElement<any>> extends Wrapper<ElementType[]>{
     private elementsCreated = 0;
+    public refs = [];
 
-    constructor(component: React.Component<any, any>, propertyName: string){
+    constructor(component: React.Component<any, any>, propertyName: string, private extraProperties = {},
+            private extractRefs = false){
         super(component, propertyName);
         if(this.component.state === undefined){
             this.component.state = {};
@@ -33,14 +36,25 @@ export class ComponentArray<ElementType extends React.ReactElement<any>> extends
         this.component.state[propertyName] = [];
     }
 
-    push(element: ElementType){
-        var newElement = React.cloneElement(element, <any>{key: this.elementsCreated++})
+    push(element: ElementType, callSetState = true){
+        var extraProps = _.clone(this.extraProperties);
 
-        this.applyChange(x => x.concat(<ElementType>newElement));
-    }
+        extraProps["key"] = this.elementsCreated++;
+        if(this.extractRefs){
+            extraProps["ref"] = instance => {
+                this.refs.push(instance);
+            }
+        }
+        var newElement = React.cloneElement(element, extraProps);
 
-    extend(newElements: ElementType[]){
-        this.applyChange(x => x.concat(newElements));
+        if(callSetState){
+            this.applyChange(x => x.concat(<ElementType>newElement));
+        }
+        else{
+            this.component.state[this.propertyName].push(newElement);
+        }
+        
+        return newElement;
     }
 }
 

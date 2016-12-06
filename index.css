@@ -29,3 +29,18 @@
     padding: 3px;
     border-radius: 4px;
 }
+
+.finite-state-editor, svg{
+    width: 100%;
+    height: 100%;
+}
+
+#container{
+    position: fixed;
+    height: 100%;
+    width: 100%;
+}
+
+body{
+    margin: 0px;
+}
