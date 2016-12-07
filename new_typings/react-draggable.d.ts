@@ -116,6 +116,6 @@ declare module 'react-draggable' {
 
     class DraggableCore extends Component<DraggableTypes.DraggableCoreProps, any> {
     }
-    
-    export = Draggable;
+
+    export = Draggable
 }

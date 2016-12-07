@@ -22,12 +22,11 @@ export class Primitive<T, PropType> extends Wrapper<T>{
     }
 }
 
-export class ComponentArray<ElementType extends React.ReactElement<any>> extends Wrapper<ElementType[]>{
+export class StateArray<ElementType extends React.ReactElement<any>> extends Wrapper<ElementType[]>{
     private elementsCreated = 0;
     public refs = [];
 
-    constructor(component: React.Component<any, any>, propertyName: string, private extraProperties = {},
-            private extractRefs = false){
+    constructor(component: React.Component<any, any>, propertyName: string){
         super(component, propertyName);
         if(this.component.state === undefined){
             this.component.state = {};
@@ -36,7 +35,7 @@ export class ComponentArray<ElementType extends React.ReactElement<any>> extends
         this.component.state[propertyName] = [];
     }
 
-    push(element: ElementType, callSetState = true){
+    push(element: ElementType, callSetState = true){/*
         var extraProps = _.clone(this.extraProperties);
 
         extraProps["key"] = this.elementsCreated++;
@@ -46,15 +45,15 @@ export class ComponentArray<ElementType extends React.ReactElement<any>> extends
             }
         }
         var newElement = React.cloneElement(element, extraProps);
-
+        */
         if(callSetState){
-            this.applyChange(x => x.concat(<ElementType>newElement));
+            this.applyChange(x => x.concat(element));
         }
         else{
-            this.component.state[this.propertyName].push(newElement);
+            this.component.state[this.propertyName].push(element);
         }
         
-        return newElement;
+        return element;
     }
 }
 
@@ -89,4 +88,13 @@ export function linkState(component: React.Component<any, any>, path: string){
         var value = element.currentTarget.value;
         return component.setState(() => createSkeletonByPath(value, path));
     };
+}
+
+export function propagateValue<DataType, Props extends {
+    data: DataType,
+    onDataBubble: (newState: State) => any
+}>(component: React.Component<Props, any>, propertyName: string){
+    return _ => {
+        component.props.data[propertyName]
+    }
 }

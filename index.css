@@ -6,6 +6,7 @@
     border-color: black;
     border-width: 6px;
     position: absolute;
+    background-color: white;
 }
 
 .state.final{

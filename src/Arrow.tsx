@@ -6,8 +6,8 @@ import {autobind} from "core-decorators";
 
 
 export default class Arrow extends React.Component</*props*/{
-    start: [number, number],
-    end: [number, number]
+    start: Coord,
+    end: Coord
 }, /*state*/{
 }>{
     constructor(props){
@@ -15,7 +15,7 @@ export default class Arrow extends React.Component</*props*/{
     }
 
     render(){
-        return <line x1={this.props.start[0]} y1={this.props.start[0]}
-            x2={this.props.end[0]} y2={this.props.end[0]} stroke="black" strokeWidth="5px" markerEnd="url(#arrowHeadEnd)" />;
+        return <line x1={this.props.start.x} y1={this.props.start.y}
+            x2={this.props.end.x} y2={this.props.end.y} stroke="black" strokeWidth="5px" markerEnd="url(#arrowHeadEnd)" />;
     }
 }
