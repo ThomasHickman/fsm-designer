@@ -6,13 +6,18 @@ import {autobind} from "core-decorators";
 import ArrowsView from "./ArrowsView"
 import Victor = require("Victor");
 
+interface Props{
+    
+}
+
 export default class FiniteStateEditor extends React.Component<{
         states: State[],
         arcs: Arc[]
     }/*props*/, {
         states: State[],
         arcs: Arc[],
-        dragging: boolean
+        dragging: boolean,
+        outsideDraggingState: number | null
     }/*state*/>{
 
     constructor(props){
@@ -21,12 +26,16 @@ export default class FiniteStateEditor extends React.Component<{
         this.state = {
             states: this.props.states,
             arcs: this.props.arcs,
-            dragging: false
+            dragging: false,
+            outsideDraggingState: null
         }
     }
 
     @autobind
     private handleStateOutsideDrag(key: number){
+        this.setState({
+            outsideDraggingState: key
+        });
     }
 
     @autobind
@@ -41,14 +50,14 @@ export default class FiniteStateEditor extends React.Component<{
     private handleStateDragStart(){
         this.setState({
             dragging: true
-        } as any)
+        })
     }
 
     @autobind
     private handleStateDragStop(){
         this.setState({
             dragging: false
-        } as any)
+        })
     }
 
     private getStatesElements(){
@@ -64,12 +73,31 @@ export default class FiniteStateEditor extends React.Component<{
         )
     }
 
+    @autobind
+    private handleArcChange(newArcs: Arc[]){
+        this.setState({
+            arcs: newArcs
+        });
+    }
+
+    @autobind
+    handleDraggingFinish(){
+        this.setState({
+            outsideDraggingState: null,
+            dragging: false
+        });
+    }
+
     render(){
         return <div className="finite-state-editor">
             <div>{/*States*/}
                 {this.getStatesElements()}
             </div>
-            <ArrowsView states={this.state.states} arcs={this.state.arcs}/>
+            <ArrowsView states={this.state.states}
+                        onArcsChange={this.handleArcChange}
+                        arcs={this.state.arcs}
+                        draggingState={this.state.outsideDraggingState}
+                        onDraggingFinish={this.handleDraggingFinish}/>
         </div>;
     }
 }

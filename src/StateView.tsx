@@ -43,9 +43,6 @@ export default class StateView extends React.Component</*props*/{
             this.props.onOutsideDrag(this.data.key);
             return false;
         }
-        else{
-            this.setState({dragging: true} as any);
-        }
     }
 
     @autobind

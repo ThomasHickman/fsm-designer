@@ -5,7 +5,7 @@ import {linkState} from "./ReactExtra";
 import {autobind} from "core-decorators";
 
 
-export default class Arrow extends React.Component</*props*/{
+export default class ArrowView extends React.Component</*props*/{
     start: Coord,
     end: Coord
 }, /*state*/{
