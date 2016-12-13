@@ -4,6 +4,7 @@ import StateView from "./StateView";
 import Victor = require("victor");
 import ArrowView from "./ArrowView";
 import ProposedArrow from "./ProposedArrow"
+import * as _ from "lodash";
 
 const arrowLength = 10;
 
@@ -13,6 +14,11 @@ interface Props{
     draggingState: number | null,
     onDraggingFinish: () => any,
     onArcsChange: (newArcs: Arc[]) => any
+}
+
+interface ArcRelation{
+    nodesRelated: [number, number]
+    arcs: Arc[]
 }
 
 export default class ArrowsView extends React.Component<Props, /*state*/{
@@ -69,7 +75,31 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
             });
         }
 
-        return allArcs.map(arc => {
+        var arcRelations: ArcRelation[] = [];
+        var arcPlaced = false;
+        for(var arc of allArcs){
+            for(var relation of arcRelations){
+                if(_.difference(relation.nodesRelated, [arc.from, arc.to]).length === 0){
+                    relation.arcs.push(arc);
+                    arcPlaced = true;
+                    break;
+                }
+            }
+            
+            if(!arcPlaced){
+                arcRelations.push({
+                    arcs: [arc],
+                    nodesRelated: [arc.from, arc.to]
+                });
+            }
+
+            arcPlaced = false;
+        }
+
+        return _.flatten(arcRelations.map(relation => {
+            var classLength = relation.arcs.length;
+
+            return relation.arcs.map((arc, arcNumber) => {
                 var edgePositions = ArrowsView.getStateEdgePositions(
                     ArrowsView.getStateCenterPos(this.props.states[arc.from].position),
                     ArrowsView.getStateCenterPos(this.props.states[arc.to].position)
@@ -78,10 +108,11 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                 return <ArrowView 
                     start={edgePositions.start}
                     end={edgePositions.end}
+                    bend={arcNumber - (classLength - 1)/2}
                     key={arc.key}
                 />
-            }
-        )
+            })
+        }));
     }
 
     @autobind
@@ -100,6 +131,21 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
             })
         }
     }
+
+    @autobind
+    handleDraggingFinish(){
+        if(this.state.snappedArrow !== null){
+            this.props.arcs.push({
+                ...this.state.snappedArrow,
+                key: this.props.arcs.length
+            });
+        }
+        this.props.onArcsChange(this.props.arcs);
+        this.props.onDraggingFinish();
+        this.setState({
+            snappedArrow: null
+        })
+    }
     
     
     render(){
@@ -116,7 +162,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                             containerOffset={this.getSvgOffset()}
                             onSnapStateChange={this.handleSnapStateChange}
                             startState={this.props.states[this.props.draggingState]}
-                            onFinish={this.props.onDraggingFinish}
+                            onFinish={this.handleDraggingFinish}
                             states={this.props.states} />
                     }
                     return null;

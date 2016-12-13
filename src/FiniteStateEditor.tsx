@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import {StateArray} from "./ReactExtra";
+import {StateArray} from "./helpers";
 import StateView from "./StateView";
 import {autobind} from "core-decorators";
 import ArrowsView from "./ArrowsView"

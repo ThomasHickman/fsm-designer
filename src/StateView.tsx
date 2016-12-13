@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Draggable = require("react-draggable");
-import {linkState} from "./ReactExtra";
+import {linkState} from "./helpers";
 import {autobind} from "core-decorators";
 
 export default class StateView extends React.Component</*props*/{

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import {linkState} from "./ReactExtra";
+import {linkState} from "./helpers";
 import {autobind} from "core-decorators";
 import StateView from "./StateView";
 import Victor = require("victor");
@@ -81,19 +81,27 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
         return null;
     }
 
+    static getStateEdgePosition(mousePosition_: Coord, state: State){
+        var mousePosition = Victor.fromObject(mousePosition_);
+        var stateCenter = Victor.fromObject(ArrowsView.getStateCenterPos(state.position));
+        var dir = mousePosition.clone().subtract(stateCenter).normalize();
+    
+        var edgePos = stateCenter.clone().add(dir.clone().multiplyScalar(StateView.outerRadius));
+
+        return edgePos;
+    }
+
     render(){
         if(this.state.mousePosition === null){
             return null;// don't render when the mouse position is not known
         }
 
         if(this.snappedElement === null){
-            var edgePositions = ArrowsView.getStateEdgePositions(
-                ArrowsView.getStateCenterPos(this.props.startState.position),
-                this.state.mousePosition);
-            
             return <ArrowView 
-                    start={edgePositions.start}
-                    end={this.state.mousePosition}/>
+                    start={ProposedArrow.getStateEdgePosition(
+                        this.state.mousePosition, this.props.startState)}
+                    end={this.state.mousePosition}
+                    bend={0}/>
         }
         else{
             return null;
