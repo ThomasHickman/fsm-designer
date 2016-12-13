@@ -1,5 +1,6 @@
 import * as React from "react";
 import _ = require("lodash");
+import Victor = require("victor");
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -97,4 +98,8 @@ export function propagateValue<DataType, Props extends {
     return _ => {
         component.props.data[propertyName]
     }
+}
+
+export function v(coord: Coord){
+    return Victor.fromObject(coord);
 }
