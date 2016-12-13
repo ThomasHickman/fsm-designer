@@ -105,10 +105,15 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                     ArrowsView.getStateCenterPos(this.props.states[arc.to].position)
                 );
 
+                var bend = arcNumber - (classLength - 1)/2;
+                if(arc.from !== relation.nodesRelated[0]){
+                    bend *= -1;
+                }
+
                 return <ArrowView 
                     start={edgePositions.start}
                     end={edgePositions.end}
-                    bend={arcNumber - (classLength - 1)/2}
+                    bend={bend}
                     key={arc.key}
                 />
             })
