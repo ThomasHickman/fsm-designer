@@ -8,15 +8,15 @@ var fse = <FiniteStateEditor states={[
         type: "starting",
         name: "Q1",
         position: {
-            x: 0,
-            y: 0
+            x: 800,
+            y: 200
         },
         key: 0
     }, {
         type: "normal",
         name: "Q2",
         position: {
-            x: 500,
+            x: 250,
             y: 200
         },
         key: 1

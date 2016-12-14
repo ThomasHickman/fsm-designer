@@ -71,8 +71,7 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
     getSnappedElement(): null | number{
        for(var i = 0;i < this.props.states.length;i++){
             var state = this.props.states[i];
-            if(state !== this.props.startState 
-                && v(ArrowsView.getStateCenterPos(state.position))
+            if(v(ArrowsView.getStateCenterPos(state.position))
                         .distance(v(this.state.mousePosition as Coord)) < ProposedArrow.snapDistance){
                 return i;
             }

@@ -5,6 +5,7 @@ import Victor = require("victor");
 import ArrowView from "./ArrowView";
 import ProposedArrow from "./ProposedArrow"
 import * as _ from "lodash";
+import LoopView from "./LoopView"
 
 const arrowLength = 10;
 
@@ -42,13 +43,15 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
         }
     }
 
-    static getStateEdgePositions(startCenter_: Coord, endCenter_: Coord){
+    static getStateEdgePositions(startCenter_: Coord, endCenter_: Coord, addedOffset: number/*in degs*/){
         var startCenter = Victor.fromObject(startCenter_);
         var endCenter = Victor.fromObject(endCenter_);
         var startToEndDir = startCenter.clone().subtract(endCenter).normalize();
         
-        var edgeStart = startCenter.clone().subtract(startToEndDir.clone().multiplyScalar(StateView.outerRadius));
-        var edgeEnd = endCenter.clone().add(startToEndDir.clone().multiplyScalar(StateView.outerRadius + arrowLength));
+        var edgeStart = startCenter.clone().subtract(
+            startToEndDir.clone().rotateDeg(addedOffset).multiplyScalar(StateView.outerRadius));
+        var edgeEnd = endCenter.clone().add(
+            startToEndDir.clone().rotateDeg(-addedOffset).multiplyScalar(StateView.outerRadius + arrowLength));
 
         return {
             start: edgeStart,
@@ -100,17 +103,30 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
             var classLength = relation.arcs.length;
 
             return relation.arcs.map((arc, arcNumber) => {
-                var edgePositions = ArrowsView.getStateEdgePositions(
-                    ArrowsView.getStateCenterPos(this.props.states[arc.from].position),
-                    ArrowsView.getStateCenterPos(this.props.states[arc.to].position)
-                );
+                if(relation.nodesRelated[0] == relation.nodesRelated[1]){
+
+                    var edgePositions = ArrowsView.getStateEdgePositions(
+                        ArrowsView.getStateCenterPos(this.props.states[arc.from].position),
+                        ArrowsView.getStateCenterPos(this.props.states[arc.to].position),
+                        70
+                    );
+                    return <LoopView
+                        start={edgePositions.start}
+                        end={edgePositions.end} />
+                }
 
                 var bend = arcNumber - (classLength - 1)/2;
                 if(arc.from !== relation.nodesRelated[0]){
                     bend *= -1;
                 }
 
-                return <ArrowView 
+                var edgePositions = ArrowsView.getStateEdgePositions(
+                    ArrowsView.getStateCenterPos(this.props.states[arc.from].position),
+                    ArrowsView.getStateCenterPos(this.props.states[arc.to].position),
+                    bend * 20
+                );
+
+                return <ArrowView
                     start={edgePositions.start}
                     end={edgePositions.end}
                     bend={bend}
