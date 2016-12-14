@@ -5,10 +5,9 @@ import StateView from "./StateView";
 import {autobind} from "core-decorators";
 import ArrowsView from "./ArrowsView"
 import Victor = require("Victor");
-
-interface Props{
-    
-}
+import StatesInput from "./StatesInput";
+import ArrowsInput from "./ArrowsInput";
+import StatesView from "./StatesView";
 
 export default class FiniteStateEditor extends React.Component<{
         states: State[],
@@ -88,16 +87,76 @@ export default class FiniteStateEditor extends React.Component<{
         });
     }
 
+    @autobind
+    handleStateNameChange(stateI: number, newName: string){
+        this.setState(oldState => {
+            (oldState.states as State[])[stateI].name = newName;
+            return oldState;
+        })
+    }
+
+    @autobind
+    handleArrowsLabelChange(arcI: number, newName: string){
+        this.setState(oldState => {
+            (oldState.arcs as Arc[])[arcI].label = newName;
+            return oldState;
+        })
+    }
+
+    @autobind
+    handleStatePositionChange(index: number, newPosition: Coord){
+        this.setState(oldState => {
+            (oldState.states as State[])[index].position = newPosition;
+            return oldState;
+        })
+    }
+
+    @autobind
+    setSVGOffset(element: SVGSVGElement){
+        var clientRect = element.getBoundingClientRect();
+        this.svgOffset = {
+            x: clientRect.left,
+            y: clientRect.top
+        }
+    }
+
+    private svgOffset: Coord;
+
     render(){
         return <div className="finite-state-editor">
-            <div>{/*States*/}
-                {this.getStatesElements()}
+            <div>{/*Input elements*/}
+                <StatesInput
+                    states={this.state.states}
+                    onNameChange={this.handleStateNameChange}
+                    disabled={this.state.dragging}/>
+
+                <ArrowsInput
+                    arcs={this.state.arcs}
+                    onNameChange={this.handleArrowsLabelChange}
+                    disabled={this.state.dragging}/>
             </div>
-            <ArrowsView states={this.state.states}
-                        onArcsChange={this.handleArcChange}
-                        arcs={this.state.arcs}
-                        draggingState={this.state.outsideDraggingState}
-                        onDraggingFinish={this.handleDraggingFinish}/>
+            <svg ref={this.setSVGOffset}>
+                <defs>
+                    <marker {...{markerWidth:"10", markerHeight:"4", refY:"2", refX:"2", orient: "auto", markerUnits:"strokeWidth"}}
+                      id="arrowHeadEnd">
+                        <path d="M0 0 V4 L4 2 Z" fill="black"></path>
+                    </marker>
+                </defs>
+                <ArrowsView
+                    states={this.state.states}
+                    arcs={this.state.arcs}
+                    onArcsChange={this.handleArcChange}
+                    draggingState={this.state.outsideDraggingState}
+                    onDraggingFinish={this.handleDraggingFinish}
+                    svgOffset={this.svgOffset}/>
+
+                <StatesView
+                    states={this.state.states}
+                    onDragStart={this.handleStateDragStart}
+                    onDragStop={this.handleStateDragStop}
+                    onOutsideDrag={this.handleStateOutsideDrag}
+                    onPositionChange={this.handleStatePositionChange}/>
+            </svg>
         </div>;
     }
 }

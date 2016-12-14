@@ -14,7 +14,8 @@ interface Props{
     arcs: Arc[], 
     draggingState: number | null,
     onDraggingFinish: () => any,
-    onArcsChange: (newArcs: Arc[]) => any
+    onArcsChange: (newArcs: Arc[]) => any,
+    svgOffset: Coord
 }
 
 interface ArcRelation{
@@ -37,10 +38,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
     }
 
     static getStateCenterPos(position: Coord){
-        return {
-            x: position.x + StateView.outerRadius,
-            y: position.y + StateView.outerRadius
-        }
+        return position;
     }
 
     static getStateEdgePositions(startCenter_: Coord, endCenter_: Coord, addedOffset: number/*in degs*/){
@@ -59,21 +57,13 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
         }
     }
 
-    @autobind
-    getSvgOffset(){
-        var clientRect = (this.refs["svg"] as SVGSVGElement).getBoundingClientRect();
-        return {
-            x: clientRect.left,
-            y: clientRect.top
-        }
-    }
-
     getArrowsElements(){
         var allArcs = [...this.props.arcs];
 
         if(this.state.snappedArrow !== null){
             allArcs.push({
                 ...this.state.snappedArrow,
+                label: "",
                 key: allArcs.length
             });
         }
@@ -158,6 +148,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
         if(this.state.snappedArrow !== null){
             this.props.arcs.push({
                 ...this.state.snappedArrow,
+                label: "",
                 key: this.props.arcs.length
             });
         }
@@ -170,17 +161,11 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
     
     
     render(){
-        return <svg ref="svg">
-                <defs>
-                    <marker {...{markerWidth:"10", markerHeight:"4", refY:"2", refX:"2", orient: "auto", markerUnits:"strokeWidth"}}
-                      id="arrowHeadEnd">
-                        <path d="M0 0 V4 L4 2 Z" fill="black"></path>
-                    </marker>
-                </defs>
+        return <g>
                 {(() => {
                     if(this.props.draggingState !== null){
                         return <ProposedArrow 
-                            containerOffset={this.getSvgOffset()}
+                            containerOffset={this.props.svgOffset}
                             onSnapStateChange={this.handleSnapStateChange}
                             startState={this.props.states[this.props.draggingState]}
                             onFinish={this.handleDraggingFinish}
@@ -189,6 +174,6 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                     return null;
                 })()}
                 {this.getArrowsElements()}
-            </svg>
+            </g>
     }
 }

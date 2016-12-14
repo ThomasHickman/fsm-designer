@@ -9,7 +9,6 @@ export default class LoopView extends React.Component</*props*/{
     end: Coord
 }, /*state*/{
 }>{
-    
     constructor(props){
         super(props);
     }

@@ -14,4 +14,5 @@ interface Arc{
     from: number;
     to: number;
     key: number;
+    label: string;
 }
