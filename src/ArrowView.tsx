@@ -26,10 +26,6 @@ export default class ArrowView extends React.Component</*props*/{
         var line    = end.clone().subtract(start);
         var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
             line.norm().rotateDeg(90).multiplyScalar(this.props.bend * ArrowView.bendFactor));
-
-        if(isNaN(middle.x)){
-            debugger;
-        }
         
         return <path d={`M${s(start)} Q ${s(middle)} ${s(end)}`}
             stroke="black" strokeWidth="5px" markerEnd="url(#arrowHeadEnd)" fill="transparent"/>
