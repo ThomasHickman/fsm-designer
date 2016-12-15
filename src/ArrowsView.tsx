@@ -1,6 +1,6 @@
 import * as React from "react";
 import {autobind} from "core-decorators";
-import StateView from "./StateView";
+import StatesView from "./StatesView";
 import Victor = require("victor");
 import ArrowView from "./ArrowView";
 import ProposedArrow from "./ProposedArrow"
@@ -15,12 +15,8 @@ interface Props{
     draggingState: number | null,
     onDraggingFinish: () => any,
     onArcsChange: (newArcs: Arc[]) => any,
-    svgOffset: Coord
-}
-
-interface ArcRelation{
-    nodesRelated: [number, number]
-    arcs: Arc[]
+    svgOffset: Coord;
+    arcTopPositions: Coord[]
 }
 
 export default class ArrowsView extends React.Component<Props, /*state*/{
@@ -47,9 +43,9 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
         var startToEndDir = startCenter.clone().subtract(endCenter).normalize();
         
         var edgeStart = startCenter.clone().subtract(
-            startToEndDir.clone().rotateDeg(addedOffset).multiplyScalar(StateView.outerRadius));
+            startToEndDir.clone().rotateDeg(addedOffset).multiplyScalar(StatesView.outerRadius));
         var edgeEnd = endCenter.clone().add(
-            startToEndDir.clone().rotateDeg(-addedOffset).multiplyScalar(StateView.outerRadius + arrowLength));
+            startToEndDir.clone().rotateDeg(-addedOffset).multiplyScalar(StatesView.outerRadius + arrowLength));
 
         return {
             start: edgeStart,

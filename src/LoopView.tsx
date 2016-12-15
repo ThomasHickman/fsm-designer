@@ -9,6 +9,7 @@ export default class LoopView extends React.Component</*props*/{
     end: Coord
 }, /*state*/{
 }>{
+    static labelOffset = 50;
     constructor(props){
         super(props);
     }

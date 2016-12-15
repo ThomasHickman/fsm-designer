@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {StateArray} from "./helpers";
-import StateView from "./StateView";
+import * as helpers from "./helpers";
 import {autobind} from "core-decorators";
 import ArrowsView from "./ArrowsView"
 import Victor = require("Victor");
@@ -59,19 +59,6 @@ export default class FiniteStateEditor extends React.Component<{
         })
     }
 
-    private getStatesElements(){
-        return this.state.states.map(stateOb =>
-            <StateView
-                data={stateOb}
-                key={stateOb.key}
-                onDataBubble={this.setStateData.bind(this, stateOb.key)}
-                onOutsideDrag={this.handleStateOutsideDrag}
-                onDragStart={this.handleStateDragStart}
-                onDragStop={this.handleStateDragStop}
-                disabled={this.state.dragging}/>
-        )
-    }
-
     @autobind
     private handleArcChange(newArcs: Arc[]){
         this.setState({
@@ -123,6 +110,8 @@ export default class FiniteStateEditor extends React.Component<{
     private svgOffset: Coord;
 
     render(){
+        var arcTopPositions = helpers.getArrowTopPositions(this.state.arcs, this.state.states);
+
         return <div className="finite-state-editor">
             <div>{/*Input elements*/}
                 <StatesInput
@@ -133,6 +122,7 @@ export default class FiniteStateEditor extends React.Component<{
                 <ArrowsInput
                     arcs={this.state.arcs}
                     onNameChange={this.handleArrowsLabelChange}
+                    labelPositions={arcTopPositions}
                     disabled={this.state.dragging}/>
             </div>
             <svg ref={this.setSVGOffset}>
@@ -145,6 +135,7 @@ export default class FiniteStateEditor extends React.Component<{
                 <ArrowsView
                     states={this.state.states}
                     arcs={this.state.arcs}
+                    arcTopPositions={arcTopPositions}
                     onArcsChange={this.handleArcChange}
                     draggingState={this.state.outsideDraggingState}
                     onDraggingFinish={this.handleDraggingFinish}

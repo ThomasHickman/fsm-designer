@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import {linkState} from "./helpers";
 import {autobind} from "core-decorators";
-import StateView from "./StateView";
+import StatesView from "./StatesView";
 import Victor = require("victor");
 import ArrowView from "./ArrowView";
 import ArrowsView from "./ArrowsView";
@@ -85,7 +85,7 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
         var stateCenter = Victor.fromObject(ArrowsView.getStateCenterPos(state.position));
         var dir = mousePosition.clone().subtract(stateCenter).normalize();
     
-        var edgePos = stateCenter.clone().add(dir.clone().multiplyScalar(StateView.outerRadius));
+        var edgePos = stateCenter.clone().add(dir.clone().multiplyScalar(StatesView.outerRadius));
 
         return edgePos;
     }

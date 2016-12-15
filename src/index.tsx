@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import FiniteStateEditor from "./FiniteStateEditor";
-import StateView from "./StateView"
 
 var fse = <FiniteStateEditor states={[
     {
@@ -20,12 +19,12 @@ var fse = <FiniteStateEditor states={[
             y: 200
         },
         key: 1
-    }
-    
+    } 
 ]} arcs={[{
     from:1,
     to: 0,
-    key: 0
+    key: 0,
+    label: "hello"
 }]}/>;
 
 ReactDOM.render(

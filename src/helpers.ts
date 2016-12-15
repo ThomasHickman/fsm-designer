@@ -1,6 +1,7 @@
 import * as React from "react";
 import _ = require("lodash");
 import Victor = require("victor");
+import LoopView from "./LoopView";
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -102,4 +103,75 @@ export function propagateValue<DataType, Props extends {
 
 export function v(coord: Coord){
     return Victor.fromObject(coord);
+}
+
+interface ArcRelation{
+    nodesRelated: [number, number]
+    arcs: Arc[]
+}
+
+function groupByRelation(arcs: Arc[]){
+    var arcRelations: ArcRelation[] = [];
+    var arcPlaced = false;
+    for(var arc of arcs){
+        for(var relation of arcRelations){
+            if(_.difference(relation.nodesRelated, [arc.from, arc.to]).length === 0){
+                relation.arcs.push(arc);
+                arcPlaced = true;
+                break;
+            }
+        }
+        
+        if(!arcPlaced){
+            arcRelations.push({
+                arcs: [arc],
+                nodesRelated: [arc.from, arc.to]
+            });
+        }
+
+        arcPlaced = false;
+    }
+
+    return arcRelations;
+}
+
+/**
+ * gets the arrow top position, null indicates a loop
+ */
+export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
+    var arcRelations = groupByRelation(arcs);
+
+    return _.flatten(arcRelations.map(relation => {
+        var classLength = relation.arcs.length;
+
+        if(classLength > 2){
+            console.error(`${classLength} relations between nodes, only two are supposed to happen`);
+        }
+
+        if(relation.nodesRelated[0] == relation.nodesRelated[1] && classLength > 1){
+            console.error(`${classLength} relations between the same node, only suppost to be one`);
+        }
+
+        return relation.arcs.map((arc, arcNumber) => {
+            if(relation.nodesRelated[0] == relation.nodesRelated[1]){
+                let nodePos = {...states[arc.from].position};
+
+                nodePos.x -= LoopView.labelOffset;
+                return nodePos;
+            }
+
+            var bend = arcNumber - (classLength - 1)/2;
+            if(arc.from !== relation.nodesRelated[0]){
+                bend *= -1;
+            }
+
+            var start   = v(states[arc.from].position);
+            var end     = v(states[arc.to].position);
+            var line    = end.clone().subtract(start);
+            var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
+                line.norm().rotateDeg(90).multiplyScalar(bend * 50));
+            
+            return middle;
+        })
+    }));
 }
