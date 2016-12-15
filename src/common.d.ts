@@ -10,9 +10,19 @@ interface State{
     key: number;
 }
 
-interface Relation{
-    from: number;
-    to: number;
-    key: number;
+interface Loop{
+    state: number,
     label: string;
+    key: number;
+    isLoop: true;
 }
+
+interface TwoWayRelation{
+    between: [number, number];
+    forwardLabel?: string;
+    backLabel?: string;
+    key: number;
+    isLoop?: false;
+}
+
+type Relation = Loop | TwoWayRelation;

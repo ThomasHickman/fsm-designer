@@ -21,10 +21,9 @@ var fse = <FiniteStateEditor states={[
         key: 1
     } 
 ]} relations={[{
-    from:1,
-    to: 0,
+    between: [1, 0],
     key: 0,
-    label: "hello"
+    forwardLabel: "hello"
 }]}/>;
 
 ReactDOM.render(
