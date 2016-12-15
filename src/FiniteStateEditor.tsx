@@ -110,8 +110,6 @@ export default class FiniteStateEditor extends React.Component<{
     private svgOffset: Coord;
 
     render(){
-        var relationTopPositions = helpers.getArrowTopPositions(this.state.relations, this.state.states);
-
         return <div className="finite-state-editor">
             <div>{/*Input elements*/}
                 <StatesInput
@@ -122,8 +120,8 @@ export default class FiniteStateEditor extends React.Component<{
                 <ArrowsInput
                     relations={this.state.relations}
                     onNameChange={this.handleArrowsLabelChange}
-                    labelPositions={relationTopPositions}
-                    disabled={this.state.dragging}/>
+                    disabled={this.state.dragging}
+                    states={this.state.states}/>
             </div>
             <svg ref={this.setSVGOffset}>
                 <defs>
@@ -135,7 +133,6 @@ export default class FiniteStateEditor extends React.Component<{
                 <ArrowsView
                     states={this.state.states}
                     relations={this.state.relations}
-                    relationTopPositions={relationTopPositions}
                     onRelationsChange={this.handleRelationChange}
                     draggingState={this.state.outsideDraggingState}
                     onDraggingFinish={this.handleDraggingFinish}
