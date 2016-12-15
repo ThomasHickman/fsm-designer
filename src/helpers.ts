@@ -105,44 +105,44 @@ export function v(coord: Coord){
     return Victor.fromObject(coord);
 }
 
-interface ArcRelation{
+interface RelationRelation{
     nodesRelated: [number, number]
-    arcs: Arc[]
+    relations: Relation[]
 }
 
-function groupByRelation(arcs: Arc[]){
-    var arcRelations: ArcRelation[] = [];
-    var arcPlaced = false;
-    for(var arc of arcs){
-        for(var relation of arcRelations){
-            if(_.difference(relation.nodesRelated, [arc.from, arc.to]).length === 0){
-                relation.arcs.push(arc);
-                arcPlaced = true;
+function groupByRelation(relations: Relation[]){
+    var relationRelations: RelationRelation[] = [];
+    var relationPlaced = false;
+    for(var relation of relations){
+        for(var relation of relationRelations){
+            if(_.difference(relation.nodesRelated, [relation.from, relation.to]).length === 0){
+                relation.relations.push(relation);
+                relationPlaced = true;
                 break;
             }
         }
         
-        if(!arcPlaced){
-            arcRelations.push({
-                arcs: [arc],
-                nodesRelated: [arc.from, arc.to]
+        if(!relationPlaced){
+            relationRelations.push({
+                relations: [relation],
+                nodesRelated: [relation.from, relation.to]
             });
         }
 
-        arcPlaced = false;
+        relationPlaced = false;
     }
 
-    return arcRelations;
+    return relationRelations;
 }
 
 /**
  * gets the arrow top position, null indicates a loop
  */
-export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
-    var arcRelations = groupByRelation(arcs);
+export function getArrowTopPositions(relations: Relation[], states: State[]): Coord[]{
+    var relationRelations = groupByRelation(relations);
 
-    return _.flatten(arcRelations.map(relation => {
-        var classLength = relation.arcs.length;
+    return _.flatten(relationRelations.map(relation => {
+        var classLength = relation.relations.length;
 
         if(classLength > 2){
             console.error(`${classLength} relations between nodes, only two are supposed to happen`);
@@ -152,21 +152,21 @@ export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
             console.error(`${classLength} relations between the same node, only suppost to be one`);
         }
 
-        return relation.arcs.map((arc, arcNumber) => {
+        return relation.relations.map((relation, relationNumber) => {
             if(relation.nodesRelated[0] == relation.nodesRelated[1]){
-                let nodePos = {...states[arc.from].position};
+                let nodePos = {...states[relation.from].position};
 
                 nodePos.x -= LoopView.labelOffset;
                 return nodePos;
             }
 
-            var bend = arcNumber - (classLength - 1)/2;
-            if(arc.from !== relation.nodesRelated[0]){
+            var bend = relationNumber - (classLength - 1)/2;
+            if(relation.from !== relation.nodesRelated[0]){
                 bend *= -1;
             }
 
-            var start   = v(states[arc.from].position);
-            var end     = v(states[arc.to].position);
+            var start   = v(states[relation.from].position);
+            var end     = v(states[relation.to].position);
             var line    = end.clone().subtract(start);
             var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
                 line.norm().rotateDeg(90).multiplyScalar(bend * 50));

@@ -11,10 +11,10 @@ import StatesView from "./StatesView";
 
 export default class FiniteStateEditor extends React.Component<{
         states: State[],
-        arcs: Arc[]
+        relations: Relation[]
     }/*props*/, {
         states: State[],
-        arcs: Arc[],
+        relations: Relation[],
         dragging: boolean,
         outsideDraggingState: number | null
     }/*state*/>{
@@ -24,7 +24,7 @@ export default class FiniteStateEditor extends React.Component<{
 
         this.state = {
             states: this.props.states,
-            arcs: this.props.arcs,
+            relations: this.props.relations,
             dragging: false,
             outsideDraggingState: null
         }
@@ -60,9 +60,9 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    private handleArcChange(newArcs: Arc[]){
+    private handleRelationChange(newRelations: Relation[]){
         this.setState({
-            arcs: newArcs
+            relations: newRelations
         });
     }
 
@@ -83,9 +83,9 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    handleArrowsLabelChange(arcI: number, newName: string){
+    handleArrowsLabelChange(relationI: number, newName: string){
         this.setState(oldState => {
-            (oldState.arcs as Arc[])[arcI].label = newName;
+            (oldState.relations as Relation[])[relationI].label = newName;
             return oldState;
         })
     }
@@ -110,7 +110,7 @@ export default class FiniteStateEditor extends React.Component<{
     private svgOffset: Coord;
 
     render(){
-        var arcTopPositions = helpers.getArrowTopPositions(this.state.arcs, this.state.states);
+        var relationTopPositions = helpers.getArrowTopPositions(this.state.relations, this.state.states);
 
         return <div className="finite-state-editor">
             <div>{/*Input elements*/}
@@ -120,9 +120,9 @@ export default class FiniteStateEditor extends React.Component<{
                     disabled={this.state.dragging}/>
 
                 <ArrowsInput
-                    arcs={this.state.arcs}
+                    relations={this.state.relations}
                     onNameChange={this.handleArrowsLabelChange}
-                    labelPositions={arcTopPositions}
+                    labelPositions={relationTopPositions}
                     disabled={this.state.dragging}/>
             </div>
             <svg ref={this.setSVGOffset}>
@@ -134,9 +134,9 @@ export default class FiniteStateEditor extends React.Component<{
                 </defs>
                 <ArrowsView
                     states={this.state.states}
-                    arcs={this.state.arcs}
-                    arcTopPositions={arcTopPositions}
-                    onArcsChange={this.handleArcChange}
+                    relations={this.state.relations}
+                    relationTopPositions={relationTopPositions}
+                    onRelationsChange={this.handleRelationChange}
                     draggingState={this.state.outsideDraggingState}
                     onDraggingFinish={this.handleDraggingFinish}
                     svgOffset={this.svgOffset}/>

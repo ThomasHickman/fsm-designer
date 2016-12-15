@@ -20,7 +20,7 @@ var fse = <FiniteStateEditor states={[
         },
         key: 1
     } 
-]} arcs={[{
+]} relations={[{
     from:1,
     to: 0,
     key: 0,

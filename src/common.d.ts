@@ -10,7 +10,7 @@ interface State{
     key: number;
 }
 
-interface Arc{
+interface Relation{
     from: number;
     to: number;
     key: number;
