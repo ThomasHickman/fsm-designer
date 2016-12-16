@@ -4,6 +4,7 @@ import Draggable = require("react-draggable");
 import {v} from "./helpers";
 import {autobind} from "core-decorators";
 import StatesView from "./StatesView";
+import Input from "./Input";
 
 export default class StatesInput extends React.Component</*props*/{
      states: State[];
@@ -26,24 +27,18 @@ export default class StatesInput extends React.Component</*props*/{
     }
 
     render(){
-        return <div> {
+        return <div> 
+            {
                 this.props.states.map((state, stateI) => 
-                    <input
+                    <Input
                         value={state.name}
                         key={stateI}
                         onChange={this.handleInputChange.bind(this, stateI)}
-                        type="text"
-                        style={{
-                            left: state.position.x - StatesInput.overallWidth/2,
-                            top: state.position.y - StatesInput.overallHeight/2,
-                            width: StatesInput.innerWidth,
-                            height: StatesInput.innerHeight,
-                            padding: StatesInput.padding
-                        }}
-                        {... this.props.disabled ? {
-                            disabled: "true",
-                        } : {}}/>)
-                }
-            </div>
+                        disabled={this.props.disabled}
+                        position={state.position}
+                    />
+                )
+            }
+        </div>
     }
 }
