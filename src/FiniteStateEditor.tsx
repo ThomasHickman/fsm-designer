@@ -18,7 +18,6 @@ export default class FiniteStateEditor extends React.Component<{
         dragging: boolean,
         outsideDraggingState: number | null
     }/*state*/>{
-
     constructor(props){
         super(props);
 
@@ -33,7 +32,8 @@ export default class FiniteStateEditor extends React.Component<{
     @autobind
     private handleStateOutsideDrag(key: number){
         this.setState({
-            outsideDraggingState: key
+            outsideDraggingState: key,
+            dragging: true
         });
     }
 

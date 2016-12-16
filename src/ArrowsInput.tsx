@@ -17,10 +17,6 @@ export default class ArrowsInput extends React.Component</*props*/{
         super(props);
     }
 
-    handleInputChange(stateNum: number, event: React.FormEvent<HTMLInputElement>){
-        this.props.onNameChange(stateNum, event.currentTarget.value);
-    }
-
     render(){
         return <div> 
             {
@@ -28,7 +24,7 @@ export default class ArrowsInput extends React.Component</*props*/{
                     <Input
                         key={arcI}
                         value={arc.label}
-                        onChange={this.handleInputChange.bind(this, arcI)}
+                        onChange={this.props.onNameChange.bind(this, arcI)}
                         disabled={this.props.disabled}
                         position={this.props.labelPositions[arcI]}
                     />

@@ -13,7 +13,7 @@ interface Props{
     startState: State,
     states: State[],
     containerOffset: Coord,
-    onSnapStateChange: (newState: State | null) => any,
+    onMouseMove: (newState: State | null) => any,
     onFinish: () => any
 }
 
@@ -59,10 +59,10 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
         this.snappedElement = this.getSnappedElement();
 
         if(this.snappedElement === null){
-            this.props.onSnapStateChange(null);
+            this.props.onMouseMove(null);
         }
         else{
-            this.props.onSnapStateChange(this.props.states[this.snappedElement]);
+            this.props.onMouseMove(this.props.states[this.snappedElement]);
         }
     }
 
@@ -99,8 +99,7 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
             return <ArrowView 
                     start={ProposedArrow.getStateEdgePosition(
                         this.state.mousePosition, this.props.startState)}
-                    end={this.state.mousePosition}
-                    bend={0}/>
+                    end={this.state.mousePosition}/>
         }
         else{
             return null;

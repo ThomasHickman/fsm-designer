@@ -22,10 +22,6 @@ export default class StatesInput extends React.Component</*props*/{
         super(props);
     }
 
-    handleInputChange(stateNum: number, event: React.FormEvent<HTMLInputElement>){
-        this.props.onNameChange(stateNum, event.currentTarget.value);
-    }
-
     render(){
         return <div> 
             {
@@ -33,7 +29,7 @@ export default class StatesInput extends React.Component</*props*/{
                     <Input
                         value={state.name}
                         key={stateI}
-                        onChange={this.handleInputChange.bind(this, stateI)}
+                        onChange={this.props.onNameChange.bind(this, stateI)}
                         disabled={this.props.disabled}
                         position={state.position}
                     />
