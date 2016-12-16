@@ -26,3 +26,8 @@ interface TwoWayRelation{
 }
 
 type Relation = Loop | TwoWayRelation;
+
+interface Transition{
+    from: Coord,
+    to: Coord
+}

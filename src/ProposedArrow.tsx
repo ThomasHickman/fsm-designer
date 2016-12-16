@@ -4,7 +4,6 @@ import {linkState} from "./helpers";
 import {autobind} from "core-decorators";
 import StatesView from "./StatesView";
 import Victor = require("victor");
-import ArrowView from "./ArrowView";
 import ArrowsView from "./ArrowsView";
 
 const arrowLength = 10;

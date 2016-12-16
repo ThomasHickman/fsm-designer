@@ -83,9 +83,22 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    handleArrowsLabelChange(relationI: number, newName: string){
+    handleArrowsLabelChange(relationI: number, forwardArrow: boolean, newName: string){
         this.setState(oldState => {
-            (oldState.relations as Relation[])[relationI].label = newName;
+            var relation = oldState.relations[relationI];
+
+            if(relation.isLoop){
+                relation.label = newName;
+            }
+            else{
+                if(forwardArrow){
+                    relation.forwardLabel = newName;
+                }
+                else{
+                    relation.backLabel = newName;
+                }
+            }
+            
             return oldState;
         })
     }

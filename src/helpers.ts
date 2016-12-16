@@ -135,43 +135,67 @@ function groupByRelation(relations: Relation[]){
     return relationRelations;
 }
 
-/**
- * gets the arrow top position, null indicates a loop
+export function getMiddle(a_: Coord, b_: Coord){
+    var a = v(a_);
+    var b = v(b_);
+    var line = a.clone().subtract(b);
+
+    return a.add(line.multiplyScalar(1/2));
+}
+
+/** 
+ * returns if a the relation already exists
  */
-export function getArrowTopPositions(relations: Relation[], states: State[]): Coord[]{
-    var relationRelations = groupByRelation(relations);
-
-    return _.flatten(relationRelations.map(relation => {
-        var classLength = relation.relations.length;
-
-        if(classLength > 2){
-            console.error(`${classLength} relations between nodes, only two are supposed to happen`);
-        }
-
-        if(relation.nodesRelated[0] == relation.nodesRelated[1] && classLength > 1){
-            console.error(`${classLength} relations between the same node, only suppost to be one`);
-        }
-
-        return relation.relations.map((relation, relationNumber) => {
-            if(relation.nodesRelated[0] == relation.nodesRelated[1]){
-                let nodePos = {...states[relation.from].position};
-
-                nodePos.x -= LoopView.labelOffset;
-                return nodePos;
-            }
-
-            var bend = relationNumber - (classLength - 1)/2;
-            if(relation.from !== relation.nodesRelated[0]){
-                bend *= -1;
-            }
-
-            var start   = v(states[relation.from].position);
-            var end     = v(states[relation.to].position);
-            var line    = end.clone().subtract(start);
-            var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
-                line.norm().rotateDeg(90).multiplyScalar(bend * 50));
-            
-            return middle;
+export function addTransitionToRelations(transition: {
+    from: number,
+    to: number
+}, relations: Relation[]): {
+    focusInputOnRelation: number,
+    focusOnForward: boolean
+} | void{
+    if(transition.from === transition.to){
+        relations.push({
+            isLoop: true,
+            state: transition.from,
+            label: "",
+            key: relations.length
         })
-    }));
+    }
+    else{
+        var thisRelation:[number, number] = [transition.from, transition.to];
+        var correctRelation = <TwoWayRelation | undefined>relations.find(relation => 
+            !relation.isLoop 
+            && _.difference(relation.between, thisRelation).length === 0);
+        
+        if(correctRelation === undefined){
+            relations.push({
+                isLoop: false,
+                between: thisRelation,
+                key: relations.length,
+                forwardLabel: ""
+            })
+        }
+        else if(correctRelation.between[0] === transition.from){
+            if(correctRelation.forwardLabel === undefined){
+                correctRelation.forwardLabel = "";
+            }
+            else{
+                return {
+                    focusInputOnRelation: correctRelation.key,
+                    focusOnForward: true
+                }
+            }
+        }
+        else{
+            if(correctRelation.backLabel === undefined){
+                correctRelation.backLabel = "";
+            }
+            else{
+                return {
+                    focusInputOnRelation: correctRelation.key,
+                    focusOnForward: false
+                }
+            }
+        }
+    }
 }
