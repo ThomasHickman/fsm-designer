@@ -8,13 +8,14 @@ import Victor = require("Victor");
 import StatesInput from "./StatesInput";
 import ArrowsInput from "./ArrowsInput";
 import StatesView from "./StatesView";
+import {Arcs, States} from "./PropsObjects";
 
 export default class FiniteStateEditor extends React.Component<{
-        states: State[],
-        arcs: Arc[]
+        states: StateRaw[],
+        arcs: ArcRaw[]
     }/*props*/, {
-        states: State[],
-        arcs: Arc[],
+        states: States,
+        arcs: Arcs,
         dragging: boolean,
         outsideDraggingState: number | null
     }/*state*/>{
@@ -22,8 +23,8 @@ export default class FiniteStateEditor extends React.Component<{
         super(props);
 
         this.state = {
-            states: this.props.states,
-            arcs: this.props.arcs,
+            states: new States(this.props.states),
+            arcs: new Arcs(this.props.arcs),
             dragging: false,
             outsideDraggingState: null
         }
@@ -38,9 +39,9 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    private setStateData(stateKey: number, newData: State){
+    private setStateData(stateKey: number, newData: StateRaw){
         this.setState(prevState => {
-            prevState.states[stateKey] = newData;
+            prevState.states.ob[stateKey] = newData;
             return prevState;
         })
     }
@@ -60,7 +61,7 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    private handleArcChange(newArcs: Arc[]){
+    private handleArcChange(newArcs: Arcs){
         this.setState({
             arcs: newArcs
         });
@@ -75,25 +76,25 @@ export default class FiniteStateEditor extends React.Component<{
     }
 
     @autobind
-    handleStateNameChange(stateI: number, newName: string){
+    handleStateNameChange(stateKey: number, newName: string){
         this.setState(oldState => {
-            (oldState.states as State[])[stateI].name = newName;
+            oldState.states.ob[stateKey].name = newName;
             return oldState;
         })
     }
 
     @autobind
-    handleArrowsLabelChange(arcI: number, newName: string){
+    handleArrowsLabelChange(arcKey: number, newName: string){
         this.setState(oldState => {
-            (oldState.arcs as Arc[])[arcI].label = newName;
+            oldState.arcs.ob[arcKey].label = newName;
             return oldState;
         })
     }
 
     @autobind
-    handleStatePositionChange(index: number, newPosition: Coord){
+    handleStatePositionChange(stateKey: number, newPosition: Coord){
         this.setState(oldState => {
-            (oldState.states as State[])[index].position = newPosition;
+            oldState.states.ob[stateKey].position = newPosition;
             return oldState;
         })
     }

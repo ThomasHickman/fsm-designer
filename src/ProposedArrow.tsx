@@ -6,14 +6,16 @@ import StatesView from "./StatesView";
 import Victor = require("victor");
 import ArrowView from "./ArrowView";
 import ArrowsView from "./ArrowsView";
+import * as _ from "lodash";
+import {Arcs, States} from "./PropsObjects";
 
 const arrowLength = 10;
 
 interface Props{
-    startState: State,
-    states: State[],
+    startState: StateRaw,
+    states: States,
     containerOffset: Coord,
-    onMouseMove: (newState: State | null) => any,
+    onMouseMove: (newState: StateRaw | null) => any,
     onFinish: () => any
 }
 
@@ -62,25 +64,24 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
             this.props.onMouseMove(null);
         }
         else{
-            this.props.onMouseMove(this.props.states[this.snappedElement]);
+            this.props.onMouseMove(this.props.states.ob[this.snappedElement]);
         }
     }
 
     static snapDistance = 40;
 
     getSnappedElement(): null | number{
-       for(var i = 0;i < this.props.states.length;i++){
-            var state = this.props.states[i];
+       for(var state of this.props.states.array){
             if(v(ArrowsView.getStateCenterPos(state.position))
                         .distance(v(this.state.mousePosition as Coord)) < ProposedArrow.snapDistance){
-                return i;
+                return state.key;
             }
         }
 
         return null;
     }
 
-    static getStateEdgePosition(mousePosition_: Coord, state: State){
+    static getStateEdgePosition(mousePosition_: Coord, state: StateRaw){
         var mousePosition = Victor.fromObject(mousePosition_);
         var stateCenter = Victor.fromObject(ArrowsView.getStateCenterPos(state.position));
         var dir = mousePosition.clone().subtract(stateCenter).normalize();

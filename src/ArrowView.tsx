@@ -2,7 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 import Draggable = require("react-draggable");
 import {v} from "./helpers";
-import {autobind} from "core-decorators";
+import {autobind} from "core-decorators"
 
 
 export default class ArrowView extends React.Component</*props*/{

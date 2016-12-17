@@ -3,6 +3,7 @@ import _ = require("lodash");
 import Victor = require("victor");
 import LoopView from "./LoopView";
 import StatesView from "./StatesView";
+import {Arcs, States} from "./PropsObjects";
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -95,7 +96,7 @@ export function linkState(component: React.Component<any, any>, path: string){
 
 export function propagateValue<DataType, Props extends {
     data: DataType,
-    onDataBubble: (newState: State) => any
+    onDataBubble: (newState: StateRaw) => any
 }>(component: React.Component<Props, any>, propertyName: string){
     return _ => {
         component.props.data[propertyName]
@@ -111,10 +112,10 @@ interface ArcRelation{
     arcs: Arc[]
 }
 
-function groupByRelation(arcs: Arc[]){
+function groupByRelation(arcs: Arcs){
     var arcRelations: ArcRelation[] = [];
     var arcPlaced = false;
-    for(var arc of arcs){
+    for(var arc of arcs.array){
         for(var relation of arcRelations){
             if(_.difference(relation.nodesRelated, [arc.from, arc.to]).length === 0){
                 relation.arcs.push(arc);
@@ -139,10 +140,11 @@ function groupByRelation(arcs: Arc[]){
 /**
  * gets the arrow top position, null indicates a loop
  */
-export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
+export function getArrowTopPositions(arcs: Arcs, states: States): NumberList<Coord>{
     var arcRelations = groupByRelation(arcs);
+    var topPositions = {};
 
-    return _.flatten(arcRelations.map(relation => {
+    arcRelations.forEach(relation => {
         var classLength = relation.arcs.length;
 
         if(classLength > 2){
@@ -155,24 +157,30 @@ export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
 
         return relation.arcs.map((arc, arcNumber) => {
             if(relation.nodesRelated[0] == relation.nodesRelated[1]){
-                let nodePos = {...states[arc.from].position};
+                let nodePos = {...states.ob[arc.from].position};
 
                 nodePos.y -= LoopView.labelOffset + StatesView.wholeStateRadius;
-                return nodePos;
+                topPositions[arc.key] = nodePos
             }
+            else{
+                var bend = arcNumber - (classLength - 1)/2;
+                if(arc.from !== relation.nodesRelated[0]){
+                    bend *= -1;
+                }
 
-            var bend = arcNumber - (classLength - 1)/2;
-            if(arc.from !== relation.nodesRelated[0]){
-                bend *= -1;
+                const bendAngle = 45;
+
+                var start   = v(states.ob[arc.from].position);
+                var end     = v(states.ob[arc.to].position);
+                var line    = end.clone().subtract(start);
+                var middle  = start.clone().add(
+                    line.multiplyScalar(1/2*Math.cos(Math.PI/180 * bend * bendAngle))
+                        .rotateDeg(bend * bendAngle));
+                
+                topPositions[arc.key] = middle;
             }
-
-            var start   = v(states[arc.from].position);
-            var end     = v(states[arc.to].position);
-            var line    = end.clone().subtract(start);
-            var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
-                line.norm().rotateDeg(90).multiplyScalar(bend * 50));
-            
-            return middle;
         })
-    }));
+    });
+    
+    return topPositions;
 }

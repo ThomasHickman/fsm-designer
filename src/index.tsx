@@ -23,8 +23,15 @@ var fse = <FiniteStateEditor states={[
 ]} arcs={[{
     from:1,
     to: 0,
-    key: 0,
     label: "hello"
+},{
+    from:1,
+    to: 1,
+    label: "blob"
+},{
+    from:0,
+    to: 1,
+    label: "blob"
 }]}/>;
 
 ReactDOM.render(

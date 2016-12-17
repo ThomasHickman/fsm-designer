@@ -5,9 +5,11 @@ import {v} from "./helpers";
 import {autobind} from "core-decorators";
 import StatesView from "./StatesView";
 import Input from "./Input";
+import * as _ from "lodash";
+import {Arcs, States} from "./PropsObjects";
 
 export default class StatesInput extends React.Component</*props*/{
-     states: State[];
+     states: States;
      onNameChange: (index: number, newName: string) => any;
      disabled: boolean;
 }, /*state*/{
@@ -25,11 +27,11 @@ export default class StatesInput extends React.Component</*props*/{
     render(){
         return <div> 
             {
-                this.props.states.map((state, stateI) => 
+                this.props.states.map(state => 
                     <Input
                         value={state.name}
-                        key={stateI}
-                        onChange={this.props.onNameChange.bind(this, stateI)}
+                        key={state.key}
+                        onChange={this.props.onNameChange.bind(this, state.key)}
                         disabled={this.props.disabled}
                         position={state.position}
                     />

@@ -9,18 +9,19 @@ import LoopView from "./LoopView"
 import {v} from "./helpers"
 import * as helpers from "./helpers";
 import FiniteStateEditor from "./FiniteStateEditor";
+import {Arcs, States} from "./PropsObjects";
 
 const arrowLength = 10;
 
 interface Props{
-    states: State[];
-    arcs: Arc[];
+    states: States;
+    arcs: Arcs;
     draggingState: number | null;
     onDraggingFinish: () => any;
-    onArcsChange: (newArcs: Arc[]) => any;
+    onArcsChange: (newArcs: Arcs) => any;
     //onArcHighlightChange: (arcToHeighlight: number) => any;
     svgOffset: Coord;
-    arcTopPositions: Coord[];
+    arcTopPositions: NumberList<Coord>;
 }
 
 export default class ArrowsView extends React.Component<Props, /*state*/{
@@ -81,11 +82,11 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
     }
 
     getArrowsElements(){
-        return this.props.arcTopPositions.map((topPos, i) => {
-            var fromPos = this.props.states[this.props.arcs[i].from].position;
-            var toPos   = this.props.states[this.props.arcs[i].to].position;
+        return _.values<Coord>(this.props.arcTopPositions).map((topPos, i) => {
+            var fromPos = this.props.states.ob[this.props.arcs.ob[i].from].position;
+            var toPos   = this.props.states.ob[this.props.arcs.ob[i].to].position;
 
-            if(this.props.arcs[i].from == this.props.arcs[i].to){
+            if(this.props.arcs.ob[i].from == this.props.arcs.ob[i].to){
                 let edgePositions = ArrowsView.getStateEdgePositions(
                     fromPos,
                     toPos,
@@ -115,9 +116,10 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
     }
 
     @autobind
-    handleMouseMove(stateOver: State | null){
+    handleMouseMove(stateOver: StateRaw | null){
         if(stateOver === null && this.state.snappedArrowKey !== null){
-            this.props.arcs.pop();
+            this.props.arcs.remove(this.state.snappedArrowKey);
+
             this.props.onArcsChange(this.props.arcs);
             
             this.setState({
@@ -125,23 +127,20 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
             });
         }
         else if(stateOver !== null && this.state.snappedArrowKey === null){
-            var existantArc = this.props.arcs.find(arc =>
+            var existantArc = this.props.arcs.array.find(arc =>
                     arc.from == this.props.draggingState
                 &&  arc.to == stateOver.key);
 
             if(existantArc === undefined){
-                var newKey = this.props.arcs[this.props.arcs.length - 1].key + 1;
-                
-                this.props.arcs.push({
+                var newOb = this.props.arcs.add({
                     from: this.props.draggingState as number,
                     to: stateOver.key,
-                    key: newKey,
                     label: ""
-                });
+                })
 
                 this.props.onArcsChange(this.props.arcs);
                 this.setState({
-                    snappedArrowKey: newKey
+                    snappedArrowKey: newOb.key
                 });
             }
             else{
@@ -166,7 +165,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                         return <ProposedArrow 
                             containerOffset={this.props.svgOffset}
                             onMouseMove={this.handleMouseMove}
-                            startState={this.props.states[this.props.draggingState]}
+                            startState={this.props.states.ob[this.props.draggingState]}
                             onFinish={this.handleDraggingFinish}
                             states={this.props.states}
                             key={-1}/>

@@ -3,16 +3,23 @@ interface Coord{
     y: number
 }
 
-interface State{
+interface StateRaw{
     type: "final" | "starting" | "normal";
     name: string;
     position: Coord;
     key: number;
 }
 
-interface Arc{
+interface ArcRaw{
     from: number;
     to: number;
-    key: number;
     label: string;
+}
+
+interface Arc extends ArcRaw{
+    key: number;
+}
+
+interface NumberList<ReturnType>{
+    [index: number]: ReturnType
 }
