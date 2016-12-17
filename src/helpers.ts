@@ -168,14 +168,11 @@ export function getArrowTopPositions(arcs: Arcs, states: States): NumberList<Coo
                     bend *= -1;
                 }
 
-                const bendAngle = 45;
-
                 var start   = v(states.ob[arc.from].position);
                 var end     = v(states.ob[arc.to].position);
                 var line    = end.clone().subtract(start);
-                var middle  = start.clone().add(
-                    line.multiplyScalar(1/2*Math.cos(Math.PI/180 * bend * bendAngle))
-                        .rotateDeg(bend * bendAngle));
+                var middle  = start.clone().add(line.multiplyScalar(1/2)).add(
+                    line.norm().rotateDeg(90).multiplyScalar(bend * 50));
                 
                 topPositions[arc.key] = middle;
             }
