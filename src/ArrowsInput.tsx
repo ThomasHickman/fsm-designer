@@ -20,15 +20,20 @@ export default class ArrowsInput extends React.Component</*props*/{
     render(){
         return <div> 
             {
-                this.props.arcs.map((arc, arcI) => 
-                    <Input
+                this.props.arcs.map((arc, arcI) => {
+                    var pos = {
+                        x: this.props.labelPositions[arcI].x,
+                        y: this.props.labelPositions[arcI].y - Input.overallHeight/2 - 5
+                    }
+
+                    return <Input
                         key={arcI}
                         value={arc.label}
                         onChange={this.props.onNameChange.bind(this, arcI)}
                         disabled={this.props.disabled}
-                        position={this.props.labelPositions[arcI]}
+                        position={pos}
                     />
-                )
+                })
             }
         </div>
     }
