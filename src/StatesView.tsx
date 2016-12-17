@@ -13,7 +13,8 @@ export default class StatesView extends React.Component</*props*/{
 }, /*state*/{
 }>{
     static readonly innerRadius   = 40;
-    static readonly outerRadius   = StatesView.innerRadius + 5;
+    static readonly outerRadius   = StatesView.innerRadius + 5
+    static readonly wholeStateRadius   = StatesView.outerRadius + 10;
 
     constructor(props){
         super(props);

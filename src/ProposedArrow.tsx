@@ -85,7 +85,7 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
         var stateCenter = Victor.fromObject(ArrowsView.getStateCenterPos(state.position));
         var dir = mousePosition.clone().subtract(stateCenter).normalize();
     
-        var edgePos = stateCenter.clone().add(dir.clone().multiplyScalar(StatesView.outerRadius));
+        var edgePos = stateCenter.clone().add(dir.clone().multiplyScalar(StatesView.wholeStateRadius));
 
         return edgePos;
     }
@@ -96,7 +96,7 @@ export default class ProposedArrow extends React.Component<Props, /*state*/{
         }
 
         if(this.snappedElement === null){
-            return <ArrowView 
+            return <ArrowView
                     start={ProposedArrow.getStateEdgePosition(
                         this.state.mousePosition, this.props.startState)}
                     end={this.state.mousePosition}/>

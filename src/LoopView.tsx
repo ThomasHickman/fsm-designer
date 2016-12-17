@@ -9,7 +9,7 @@ export default class LoopView extends React.Component</*props*/{
     end: Coord
 }, /*state*/{
 }>{
-    static labelOffset = 50;
+    static labelOffset = 55;
     constructor(props){
         super(props);
     }
@@ -19,7 +19,7 @@ export default class LoopView extends React.Component</*props*/{
             return coord.x + " " + coord.y;
         }
 
-        return <path d={`M ${s(this.props.start)} A 50 50, 0, 1, 1, ${s(this.props.end)}`}
+        return <path d={`M ${s(this.props.start)} A 30 30, 0, 1, 1, ${s(this.props.end)}`}
             stroke="black" strokeWidth="5px" markerEnd="url(#arrowHeadEnd)" fill="transparent"/>
     }
 }

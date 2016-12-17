@@ -18,19 +18,19 @@ interface Props{
     draggingState: number | null;
     onDraggingFinish: () => any;
     onArcsChange: (newArcs: Arc[]) => any;
-    onArcHighlightChange: (arcToHeighlight: number) => any;
+    //onArcHighlightChange: (arcToHeighlight: number) => any;
     svgOffset: Coord;
     arcTopPositions: Coord[];
 }
 
 export default class ArrowsView extends React.Component<Props, /*state*/{
-    snappedArrowIndex: null | number
+    snappedArrowKey: null | number
 }>{
     constructor(props: Props){
         super(props);
 
         this.state = {
-            snappedArrowIndex: null
+            snappedArrowKey: null
         }
     }
 
@@ -47,13 +47,23 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
         var endToMiddle     = middle.clone().subtract(endCenter).normalize();
         
         var edgeStart = startCenter.clone().add(
-            startToMiddle.clone().multiplyScalar(StatesView.outerRadius));
+            startToMiddle.clone().multiplyScalar(StatesView.wholeStateRadius));
         var edgeEnd = endCenter.clone().add(
-            endToMiddle.clone().multiplyScalar(StatesView.outerRadius + arrowLength));
+            endToMiddle.clone().multiplyScalar(StatesView.wholeStateRadius + arrowLength));
 
         return {
             start: edgeStart,
             end: edgeEnd
+        }
+    }
+
+    static getLoopStartAndEnd(statePos_: Coord){
+        var statePos        = v(statePos_);
+        var centerToEdge    = v({x: 0, y: -StatesView.wholeStateRadius});
+
+        return{
+            start: statePos.clone().add(centerToEdge.clone().rotateDeg(-15)),
+            end: statePos.clone().add(centerToEdge.clone().rotateDeg(15))
         }
     }
 
@@ -72,16 +82,25 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
 
     getArrowsElements(){
         return this.props.arcTopPositions.map((topPos, i) => {
+            var fromPos = this.props.states[this.props.arcs[i].from].position;
+            var toPos   = this.props.states[this.props.arcs[i].to].position;
+
             if(this.props.arcs[i].from == this.props.arcs[i].to){
-                return null;
-                return <LoopView
-                    start={edgePositions.start}
-                    end={edgePositions.end} />
+                let edgePositions = ArrowsView.getStateEdgePositions(
+                    fromPos,
+                    toPos,
+                    topPos
+                );
+
+                return <LoopView 
+                    {...ArrowsView.getLoopStartAndEnd(fromPos)}
+                    key={i}
+                     />
             }
             else{
-                var edgePositions = ArrowsView.getStateEdgePositions(
-                    this.props.states[this.props.arcs[i].from].position,
-                    this.props.states[this.props.arcs[i].to].position,
+                let edgePositions = ArrowsView.getStateEdgePositions(
+                    fromPos,
+                    toPos,
                     topPos
                 );
 
@@ -97,22 +116,22 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
 
     @autobind
     handleMouseMove(stateOver: State | null){
-        if(stateOver === null && this.state.snappedArrowIndex !== null){
-            this.props.arcs.splice(this.state.snappedArrowIndex, 1);
+        if(stateOver === null && this.state.snappedArrowKey !== null){
+            this.props.arcs.pop();
             this.props.onArcsChange(this.props.arcs);
             
             this.setState({
-                snappedArrowIndex: null
+                snappedArrowKey: null
             });
         }
-        else if(stateOver !== null && this.state.snappedArrowIndex === null){
+        else if(stateOver !== null && this.state.snappedArrowKey === null){
             var existantArc = this.props.arcs.find(arc =>
                     arc.from == this.props.draggingState
                 &&  arc.to == stateOver.key);
 
             if(existantArc === undefined){
                 var newKey = this.props.arcs[this.props.arcs.length - 1].key + 1;
-
+                
                 this.props.arcs.push({
                     from: this.props.draggingState as number,
                     to: stateOver.key,
@@ -122,7 +141,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
 
                 this.props.onArcsChange(this.props.arcs);
                 this.setState({
-                    snappedArrowIndex: newKey
+                    snappedArrowKey: newKey
                 });
             }
             else{
@@ -134,7 +153,7 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
     @autobind
     handleDraggingFinish(){
         this.setState({
-            snappedArrowIndex: null
+            snappedArrowKey: null
         });
         this.props.onDraggingFinish();
     }
@@ -149,7 +168,8 @@ export default class ArrowsView extends React.Component<Props, /*state*/{
                             onMouseMove={this.handleMouseMove}
                             startState={this.props.states[this.props.draggingState]}
                             onFinish={this.handleDraggingFinish}
-                            states={this.props.states} />
+                            states={this.props.states}
+                            key={-1}/>
                     }
                     return null;
                 })()}

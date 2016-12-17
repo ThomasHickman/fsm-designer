@@ -2,6 +2,7 @@ import * as React from "react";
 import _ = require("lodash");
 import Victor = require("victor");
 import LoopView from "./LoopView";
+import StatesView from "./StatesView";
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -156,7 +157,7 @@ export function getArrowTopPositions(arcs: Arc[], states: State[]): Coord[]{
             if(relation.nodesRelated[0] == relation.nodesRelated[1]){
                 let nodePos = {...states[arc.from].position};
 
-                nodePos.x -= LoopView.labelOffset;
+                nodePos.y -= LoopView.labelOffset + StatesView.wholeStateRadius;
                 return nodePos;
             }
 
