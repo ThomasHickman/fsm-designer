@@ -24,7 +24,7 @@ export default class ArrowsInput extends React.Component</*props*/{
                 this.props.arcs.map(arc => {
                     var pos = {
                         x: this.props.labelPositions[arc.key].x,
-                        y: this.props.labelPositions[arc.key].y// - Input.overallHeight/2
+                        y: this.props.labelPositions[arc.key].y //- Input.overallHeight/2
                     }
 
                     return <Input

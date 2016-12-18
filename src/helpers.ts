@@ -4,6 +4,7 @@ import Victor = require("victor");
 import LoopView from "./LoopView";
 import StatesView from "./StatesView";
 import {Arcs, States} from "./PropsObjects";
+import Input from "./Input"
 
 export class Wrapper<T>{
     constructor(protected component: React.Component<any, any>, protected propertyName: string){
@@ -159,7 +160,7 @@ export function getArrowTopPositions(arcs: Arcs, states: States): NumberList<Coo
             if(relation.nodesRelated[0] == relation.nodesRelated[1]){
                 let nodePos = {...states.ob[arc.from].position};
 
-                nodePos.y -= LoopView.labelOffset + StatesView.wholeStateRadius;
+                nodePos.y -= LoopView.labelOffset + StatesView.wholeStateRadius + Input.overallHeight / 2;
                 topPositions[arc.key] = nodePos
             }
             else{
